@@ -28,8 +28,9 @@ export default class Editor extends React.Component {
         document.body.appendChild(element);
         element.click();
     }
-    getRevisions= (e) =>{
-        Request.get("/revision", { content: "Select all revision" }).then(resp => console.log(resp.data));
+
+    getRevisions = (e) => {
+        Request.get("/revisions").then(resp => console.log(resp.data));
     }
 
     shouldStoreNewRevision = (e) => {
@@ -51,9 +52,13 @@ export default class Editor extends React.Component {
         return false;
     }
 
+    storeNewRevision = (content) => {
+        Request.post("/edit", { content }).then(resp => console.log(resp.data));
+    }
+
     handleChange = (e) => {
         if (this.shouldStoreNewRevision(e)) {
-            Request.post("/edit", { content: e.target.value }).then(resp => console.log(resp.data));
+            this.storeNewRevision(e.target.value);
             this.state.newChangesCount = 0;
 
         }
@@ -62,22 +67,31 @@ export default class Editor extends React.Component {
 
     render() {
         return <div id="textContainer">
-
             <div className="currentVersion">
                 <div className="user_choice">
                     <button className="options" onClick={this.uploadFile}>Upload</button>
                     <button className="options" onClick={this.downloadFile}>Download</button>
                 </div>
-                <textarea  id="file" onChange={this.handleChange} value={this.state.content}></textarea>
+                <textarea id="file" onChange={this.handleChange} value={this.state.content}></textarea>
             </div>
             <div className="oldVersion">
                 <div className="user_choice">
                     <button className="options" onClick={this.getRevisions}>Revisions</button>
-                </div>  
-                <textarea  id="revision"></textarea>   
+                </div>
+                <textarea id="revision"></textarea>
             </div>
 
         </div>
+    }
 
+    storeNewRevisionAtAutoInterval = () => {
+        if (this.state.newChangesCount > 0) {
+            this.storeNewRevision(this.state.content);
+            this.state.newChangesCount = 0;
+        }
+    }
+
+    componentDidMount() {
+        setInterval(this.storeNewRevisionAtAutoInterval, 3000);
     }
 }
