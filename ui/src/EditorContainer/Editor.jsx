@@ -1,9 +1,13 @@
 import React from "react";
 import Request from "../Util/Request";
+import Revisions from "./Revisions.jsx";
 
 const THRESHOLD = 3;
 
+
 export default class Editor extends React.Component {
+
+    revisionsRef = React.createRef();
 
     state = {
         content: "",
@@ -31,6 +35,7 @@ export default class Editor extends React.Component {
 
     getRevisions = (e) => {
         Request.get("/revisions").then(resp => console.log(resp.data));
+
     }
 
     shouldStoreNewRevision = (e) => {
@@ -53,7 +58,7 @@ export default class Editor extends React.Component {
     }
 
     storeNewRevision = (content) => {
-        Request.post("/edit", { content }).then(resp => console.log(resp.data));
+        Request.post("/edit", { content }).then(resp => {this.revisionsRef.current.fetchRevisions()});
     }
 
     handleChange = (e) => {
@@ -62,7 +67,11 @@ export default class Editor extends React.Component {
             this.state.newChangesCount = 0;
 
         }
-        this.setState({ content: e.target.value });
+        this.setContent(e.target.value);
+    }
+
+    setContent = (content) => {
+        this.setState({ content });
     }
 
     render() {
@@ -74,13 +83,13 @@ export default class Editor extends React.Component {
                 </div>
                 <textarea id="file" onChange={this.handleChange} value={this.state.content}></textarea>
             </div>
-            <div className="oldVersion">
+            {/* <div className="oldVersion">
                 <div className="user_choice">
                     <button className="options" onClick={this.getRevisions}>Revisions</button>
                 </div>
                 <textarea id="revision"></textarea>
-            </div>
-
+            </div> */}
+            <Revisions setContent={this.setContent} ref={this.revisionsRef} />
         </div>
     }
 

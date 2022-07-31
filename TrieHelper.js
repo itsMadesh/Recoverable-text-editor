@@ -10,7 +10,7 @@ let update = (root, content, i) => {
     return 0;
 };
 
-const setVersions = (root, allVersions=[], version = "") => {
+const setVersions = (root, allVersions = [], version = "") => {
     if (Object.keys(root).length == 0) {
         allVersions.push(version);
     }
@@ -22,7 +22,9 @@ const setVersions = (root, allVersions=[], version = "") => {
 
 const getAllVersions = (root) => {
     const allVersions = [];
-    setVersions(root, allVersions);
+    if (Object.keys(root).length > 0) {
+        setVersions(root, allVersions);
+    }
     return allVersions;
 }
 
