@@ -26,7 +26,7 @@ app.post("/edit", (req, res) => {
     res.sendStatus(200);
 });
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 app.listen(port, async (err) => {
     if (err) throw err;
     console.log(`App running on http://localhost:${port}`)
